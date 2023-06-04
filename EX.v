@@ -1,0 +1,11 @@
+module EX(input [31:0]RS,RT,R_MEM,R_WB,IMM_OFST,PC_4_IN, input[1:0]SELS,SELT, input  UNSGN, input [2:0]OP_CAT,CMD, output [31:0]PC_4_OUT,ALU_OUT, output BRANCH,IS_BR);
+parameter _st=4,_ld=3,_br2=2,_br1=1,_ar=0;
+wire [31:0]OUTS,OUTT;
+assign PC_4_OUT=PC_4_IN+(IMM_OFST<<2);
+wire EG,NE;
+assign IS_BR=(OP_CAT==_br1)|(OP_CAT==_br2);
+assign BRANCH=((OP_CAT==_br1)&&EG)||((OP_CAT==_br2)&&NE);
+MUX #(.Nx1(4)) _MUX_S (.IN({R_MEM,R_WB,RS,{32{1'b0}}}),.SEL(SELS),.OUT(OUTS));
+MUX #(.Nx1(4)) _MUX_T (.IN({R_MEM,R_WB,RT,IMM_OFST}),.SEL(SELT),.OUT(OUTT));
+ALU _ALU (.INS(OUTS),.INT(OUTT),.CMD(CMD),.S(UNSGN),.OUT(ALU_OUT),.EG(EG),.NE(NE));
+endmodule;
